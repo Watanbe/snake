@@ -8,7 +8,7 @@ class Game:
     def __init__(self) -> None:
         pg.init()
         self.WINDOW_SIZE = 500
-        self.TILE_SIZE = 50
+        self.TILE_SIZE = 10
         self.screen = pg.display.set_mode([self.WINDOW_SIZE] * 2)
         self.clock = pg.time.Clock()
         self.new_game()
@@ -97,4 +97,5 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     agent = QLearning(game)
-    agent.test()
+    agent.train()
+    # agent.test()

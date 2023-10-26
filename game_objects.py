@@ -104,22 +104,22 @@ class Snake:
         return self.touch_border or self.eat_itself
     
     def can_go_left(self):
-        if (self.rect.left < 0):
+        if (self.rect.left <= 0):
             return False
         return True
     
     def can_go_right(self):
-        if (self.rect.right > self.game.WINDOW_SIZE):
+        if (self.rect.right >= self.game.WINDOW_SIZE):
             return False
         return True
     
     def can_go_up(self):
-        if (self.rect.top < 0):
+        if (self.rect.top <= 0):
             return False
         return True
     
     def can_go_down(self):
-        if (self.rect.bottom > self.game.WINDOW_SIZE):
+        if (self.rect.bottom >= self.game.WINDOW_SIZE):
             return False
         return True
 

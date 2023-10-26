@@ -8,12 +8,12 @@ class QLearning:
         self.env = game
         self.q_values = np.zeros((2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4))
 
-        self.epsilon = 0.001
-        self.epsilon_discount = 0.692
+        self.epsilon = 1
+        self.epsilon_discount = 0.592
         self.min_epsilon = 0.001
 
-        self.discount_factor = 0.75
-        self.learning_rate = 0.03
+        self.discount_factor = 0.85
+        self.learning_rate = 0.01
 
         # actions = [up, down, left, right]
         self.actions = [pg.K_w, pg.K_s, pg.K_a, pg.K_d]
@@ -31,7 +31,7 @@ class QLearning:
     def train(self):
         max_tam = 0
         # for i in range(1, self.num_episodes):
-        while max_tam < 40:
+        while max_tam < 100:
 
             current_state = self.env.get_state()
             self.update_epsilon()
@@ -41,6 +41,13 @@ class QLearning:
             while not done:
                 action = self.get_action(current_state)
                 new_state, reward, done = self.env.step(self.actions[action])
+
+
+                if (snake_size%10 == 0 and snake_size > max_tam):
+                    reward += 0.5
+                    with open(f'pickle/{snake_size}.pickle', 'wb') as file:
+                        pickle.dump(self.q_values, file)
+
                 self.q_values[current_state][action] = (1 - self.learning_rate)\
                     * self.q_values[current_state][action] + self.learning_rate\
                     * (reward + self.discount_factor * max(self.q_values[new_state]))
@@ -48,22 +55,19 @@ class QLearning:
                 current_state = new_state
                 snake_size = self.env.snake.length
 
-                if (snake_size%10 == 0):
-                    directory = 'pickle'
-                    with open(f'pickle/{snake_size}.pickle', 'wb') as file:
-                        pickle.dump(self.q_values, file)
-
             max_tam = max(max_tam, snake_size)
             # print(f"Iteração {i}, tamanho: {snake_size}, tamanho máximo: {max_tam}")
+            print(f"tamanho: {snake_size}, tamanho máximo: {max_tam}, self eating: {self.env.snake.eat_itself}")
             self.env.new_game()
 
 
     def test(self):
-        file = open('pickle/20.pickle', 'rb')
+        file = open('pickle/50.pickle', 'rb')
         self.q_values = pickle.load(file)
 
         current_state = self.env.get_state()
         done = False
+        self.epsilon = 0
 
         while not done:
             action = self.get_action(current_state)
