@@ -84,6 +84,14 @@ class Game:
         state.append(int(self.snake.can_go_right()))
         state.append(int(self.snake.can_go_up()))
         state.append(int(self.snake.can_go_down()))
+        
+        state.append(int(food_xy[1] == snake_xy[1]))
+        state.append(int(food_xy[0] == snake_xy[0]))
+
+        state.append(int(self.snake.will_eat_itself((0, 1))))
+        state.append(int(self.snake.will_eat_itself((0, -1))))
+        state.append(int(self.snake.will_eat_itself((-1, 0))))
+        state.append(int(self.snake.will_eat_itself((1, 0))))
 
         return tuple(state)
 

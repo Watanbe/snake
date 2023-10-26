@@ -48,7 +48,7 @@ class Snake:
                     self.delta_time_return = True
 
     def segments_xy(self):
-        return [((self.rect.centerx//self.size) + 1, (self.rect.centery//self.size) + 1)]
+        return [((self.rect.centerx//self.size + 1, self.rect.centery//self.size + 1))]
 
     def delta_time(self):
         time_now = pg.time.get_ticks()
@@ -58,7 +58,10 @@ class Snake:
         return self.delta_time_return
 
     def get_random_position(self):
-        return [randrange(self.size // 2, self.game.WINDOW_SIZE - self.size // 2, self.size)] * 2
+        return [
+            randrange(self.size // 2, self.game.WINDOW_SIZE - self.size // 2, self.size),
+            randrange(self.size // 2, self.game.WINDOW_SIZE - self.size // 2, self.size)
+        ]
 
     def check_borders(self):
         if self.rect.left < 0 or self.rect.right > self.game.WINDOW_SIZE:
@@ -94,7 +97,7 @@ class Snake:
 
     def calc_reward(self):
         if (self.touch_border or self.eat_itself):
-            return -10
+            return -30
         elif self.ate_food:
             self.ate_food = False
             return 1
@@ -103,6 +106,14 @@ class Snake:
     def calc_is_done(self):
         return self.touch_border or self.eat_itself
     
+    def will_eat_itself(self, coord):
+        head_xy = self.segments_xy()[0]
+        all_coord = set([head_xy[0] + coord[0], head_xy[1] + coord[1]])
+        for segment in self.segments[1:]:
+            all_coord.add((segment.centerx//self.size, segment.centery//self.size))
+
+        return self.length != len(all_coord)
+
     def can_go_left(self):
         if (self.rect.left <= 0):
             return False
