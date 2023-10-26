@@ -12,7 +12,6 @@ class Game:
         self.screen = pg.display.set_mode([self.WINDOW_SIZE] * 2)
         self.clock = pg.time.Clock()
         self.new_game()
-        self.learning = QLearning(self)
         self.begin_time = None
         
     def draw_grid(self):
@@ -56,8 +55,6 @@ class Game:
     def check_event(self) -> None:
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                print(self.learning.q_values)
-                print(self.learning.rewards)
                 pg.quit()
                 sys.exit()
             
@@ -67,23 +64,37 @@ class Game:
         new_event = pg.event.Event(pg.KEYDOWN, key=key)
         pg.event.post(new_event)
 
-    def run(self) -> None:
-        maxSegements = -1
-        while True:
-            self.learning.create_rewards()
-            self.learning.get_next_action()
-            self.learning.get_next_location()
-            if self.learning.action != None:
-                self.create_event(self.learning.action)
+    def get_state(self):
+        food_xy = self.food.segments_xy()
+        snake_xy = self.snake.segments_xy()[0]
 
-            self.check_event()
-            self.update()
-            self.learning.calc_new_q_value()
-            self.draw()
-            if maxSegements < max(maxSegements, len(self.snake.segments)):
-                maxSegements = max(maxSegements, len(self.snake.segments))
-                print(maxSegements)
+        state = []
+
+        state.append(int(food_xy[0] < snake_xy[0]))
+        state.append(int(food_xy[0] > snake_xy[0]))
+        state.append(int(food_xy[1] < snake_xy[1]))
+        state.append(int(food_xy[1] > snake_xy[1]))
+
+        state.append(int(self.snake.current_event == pg.K_w))
+        state.append(int(self.snake.current_event == pg.K_a))
+        state.append(int(self.snake.current_event == pg.K_s))
+        state.append(int(self.snake.current_event == pg.K_d))
+
+        state.append(int(self.snake.can_go_left()))
+        state.append(int(self.snake.can_go_right()))
+        state.append(int(self.snake.can_go_up()))
+        state.append(int(self.snake.can_go_down()))
+
+        return tuple(state)
+
+    def step(self, action):
+        self.create_event(action)
+        self.check_event()
+        self.update()
+        self.draw()
+        return self.get_state(), self.snake.calc_reward(), self.snake.calc_is_done()
 
 if __name__ == '__main__':
     game = Game()
-    game.run()
+    agent = QLearning(game)
+    agent.test()
