@@ -6,13 +6,13 @@ import time
 class QLearning:
     def __init__(self, game):
         self.env = game
-        self.q_values = np.zeros((2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4))
+        self.q_values = np.zeros((2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4))
 
         self.epsilon = 1
         self.epsilon_discount = 0.592
         self.min_epsilon = 0.001
 
-        self.discount_factor = 0.85
+        self.discount_factor = 0.83
         self.learning_rate = 0.001
 
         # actions = [up, down, left, right]
@@ -31,7 +31,7 @@ class QLearning:
     def train(self):
         max_tam = 0
         # for i in range(1, self.num_episodes):
-        while max_tam < 300:
+        while max_tam < 15:
             counter = 0
             current_state = self.env.get_state()
             self.update_epsilon()
@@ -48,7 +48,7 @@ class QLearning:
 
                 counter += 1
 
-                if (snake_size%10 == 0 and snake_size > max_tam):
+                if (snake_size%15 == 0 and snake_size > max_tam):
                     with open(f'pickle/{snake_size}.pickle', 'wb') as file:
                         pickle.dump(self.q_values, file)
 
@@ -66,12 +66,12 @@ class QLearning:
 
             max_tam = max(max_tam, snake_size)
             # print(f"Iteração {i}, tamanho: {snake_size}, tamanho máximo: {max_tam}")
-            print(f"tamanho: {snake_size}, tamanho máximo: {max_tam}, self eating: {self.env.snake.eat_itself}")
+            print(f"tamanho: {snake_size}, tamanho máximo: {max_tam}, epsilon: {self.epsilon}")
             self.env.new_game()
 
 
     def test(self):
-        file = open('pickle/60.pickle', 'rb')
+        file = open('pickle/70.pickle', 'rb')
         self.q_values = pickle.load(file)
 
         current_state = self.env.get_state()
@@ -80,7 +80,8 @@ class QLearning:
 
         while not done:
             action = self.get_action(current_state)
-            new_state, reward, done = self.env.step(self.actions[action])                
+            new_state, _, done = self.env.step(self.actions[action])                
             current_state = new_state
 
             time.sleep(0.1)
+        print(self.env.snake.length)

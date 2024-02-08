@@ -7,8 +7,8 @@ import datetime
 class Game:
     def __init__(self) -> None:
         pg.init()
-        self.WINDOW_SIZE = 500
-        self.TILE_SIZE = 10
+        self.WINDOW_SIZE = 400
+        self.TILE_SIZE = 100
         self.screen = pg.display.set_mode([self.WINDOW_SIZE] * 2)
         self.clock = pg.time.Clock()
         self.new_game()
@@ -85,8 +85,8 @@ class Game:
         state.append(int(self.snake.can_go_up()))
         state.append(int(self.snake.can_go_down()))
         
-        state.append(int(food_xy[1] == snake_xy[1]))
-        state.append(int(food_xy[0] == snake_xy[0]))
+        # state.append(int(food_xy[1] == snake_xy[1]))
+        # state.append(int(food_xy[0] == snake_xy[0]))
 
         state.append(int(self.snake.will_eat_itself((0, 1))))
         state.append(int(self.snake.will_eat_itself((0, -1))))

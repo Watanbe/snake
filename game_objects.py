@@ -97,7 +97,7 @@ class Snake:
 
     def calc_reward(self):
         if (self.touch_border or self.eat_itself):
-            return -30
+            return -10
         elif self.ate_food:
             self.ate_food = False
             return 1
